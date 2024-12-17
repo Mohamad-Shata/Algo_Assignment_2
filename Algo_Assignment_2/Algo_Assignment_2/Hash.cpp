@@ -5,25 +5,45 @@
 using namespace std;
 
 int divisionMethod(int key, int tableSize) {
-    return key % tableSize;
+    if (tableSize == 0) return 0;
+    return abs(key) % tableSize;
 }
 
+
 int multiplicationMethod(int key, int tableSize) {
+    if (tableSize == 0) return 0;
     const double A = 0.6180339887;
-    double fractionalPart = key * A - int(key * A);
-    return int(tableSize * fractionalPart);
+    double fractionalPart = fmod(abs(key) * A, 1);
+    return static_cast<int>(tableSize * fractionalPart);
 }
 
 int midSquareMethod(int key, int tableSize) {
-    int square = key * key;
-    int mid = (square / 100) % 100;
-    return mid % tableSize;
+    if (tableSize == 0) return 0;
+
+    long long square = static_cast<long long>(key) * key;
+    int numDigits = floor(log10(square)) + 1;
+
+    int digitsNeeded = floor(log10(tableSize - 1)) + 1;
+    int middlePosition = numDigits / 2;
+
+    long long divisor = pow(10, middlePosition - (digitsNeeded / 2));
+    int middleDigits = (square / divisor) % static_cast<int>(pow(10, digitsNeeded));
+
+    return middleDigits % tableSize;
 }
 
 int foldingMethod(int key, int tableSize) {
-    int part1 = key / 1000;
-    int part2 = key % 1000;
-    int sum = part1 + part2;
+    if (tableSize == 0) return 0;
+
+    key = abs(key);
+    int sum = 0;
+
+    int partSize = floor(log10(tableSize)) + 1;
+    while (key > 0) {
+        sum += key % static_cast<int>(pow(10, partSize));
+        key /= static_cast<int>(pow(10, partSize));
+    }
+
     return sum % tableSize;
 }
 
@@ -78,6 +98,25 @@ void printHashTable(const vector<int>& hashTable, const string& tableName) {
 
 
 int main() {
+
+    // int keys[] = {123, 4567, 8910, 111213, -1415}; // Sample keys
+    // int tableSizes[] = {10, 50, 100, 1000};       // Different table sizes
+
+    // for (int tableSize : tableSizes) {
+    //     cout << "\nTable Size: " << tableSize << endl;
+
+    //     for (int key : keys) {
+    //         cout << "Key: " << key << endl;
+    //         cout << "Division Method: " << divisionMethod(key, tableSize) << endl;
+    //         cout << "Multiplication Method: " << multiplicationMethod(key, tableSize) << endl;
+    //         cout << "Mid-Square Method: " << midSquareMethod(key, tableSize) << endl;
+    //         cout << "Folding Method: " << foldingMethod(key, tableSize) << endl;
+    //         cout << "-----------------------------" << endl;
+    //     }
+    // }
+
+    
+
     int tableSize = 10;
 
     vector<list<int>> chainTable(tableSize);
